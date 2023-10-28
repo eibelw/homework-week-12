@@ -1,13 +1,29 @@
-
-import * as React from 'react';
+import * as React from "react";
+import { useState } from "react";
+import { Container, Divider, Heading } from "@chakra-ui/react";
+import "./App.css";
 
 function Board() {
-  const squares = Array(9).fill(null);
+  const [nextTurn, setTurn] = useState(true);
+  const [squares, setSquares] = useState(Array(9).fill(null));
   function selectSquare(square) {
-
+    if (squares[square] || calculateWinner(squares)) {
+      return;
+    }
+    console.log("Button clicked");
+    const nextSquares = squares.slice();
+    if (nextTurn) {
+      nextSquares[square] = "X";
+    } else {
+      nextSquares[square] = "O";
+    }
+    setSquares(nextSquares);
+    setTurn(!nextTurn);
   }
 
   function restart() {
+    setSquares(Array(9).fill(null));
+    setTurn(true);
   }
 
   function renderSquare(i) {
@@ -19,34 +35,43 @@ function Board() {
   }
 
   return (
-    <div>
-      <div >STATUS</div>
-      <div >
-        {renderSquare(0)}
-        {renderSquare(1)}
-        {renderSquare(2)}
+    <Container bg="#A6BB8D" css="margin-top: 100px; padding: 20px; border-radius: 50px">
+      <div className="App">
+        <Heading>
+          <div className="App-header"> Tic-Tac-Toe </div>
+        </Heading>
+        <Divider />
+        <div className="status"> Status </div>
+        <div className="status">{calculateStatus(calculateWinner(squares), squares, nextTurn)}</div>
+        <div className="board">
+          <div className="board-row">
+            {renderSquare(0)}
+            {renderSquare(1)}
+            {renderSquare(2)}
+          </div>
+          <div className="board-row">
+            {renderSquare(3)}
+            {renderSquare(4)}
+            {renderSquare(5)}
+          </div>
+          <div className="board-row">
+            {renderSquare(6)}
+            {renderSquare(7)}
+            {renderSquare(8)}
+          </div>
+        </div>
+        <div className="restart">
+          <button onClick={restart}>Restart here</button>
+        </div>
       </div>
-      <div >
-        {renderSquare(3)}
-        {renderSquare(4)}
-        {renderSquare(5)}
-      </div>
-      <div >
-        {renderSquare(6)}
-        {renderSquare(7)}
-        {renderSquare(8)}
-      </div>
-      <button onClick={restart}>
-        restart
-      </button>
-    </div>
+    </Container>
   );
 }
 
 function Game() {
   return (
-    <div >
-      <div >
+    <div>
+      <div>
         <Board />
       </div>
     </div>
@@ -54,17 +79,16 @@ function Game() {
 }
 
 // eslint-disable-next-line no-unused-vars
-function calculateStatus(winner, squares, nextValue) {
-  return winner
-    ? `Winner: ${winner}`
-    : squares.every(Boolean)
-      ? `Scratch: Cat's game`
-      : `Next player: ${nextValue}`;
+function calculateStatus(winner, squares, nextTurn) {
+  const thewinner = calculateWinner(squares);
+  const thenextValue = calculateNextValue(squares);
+
+  return thewinner ? `Winner: ${winner}` : squares.every(Boolean) ? `It's a tie` : `Next player: ${thenextValue}`;
 }
 
 // eslint-disable-next-line no-unused-vars
 function calculateNextValue(squares) {
-  return squares.filter(Boolean).length % 2 === 0 ? 'X' : 'O';
+  return squares.filter(Boolean).length % 2 === 0 ? "X" : "O";
 }
 
 // eslint-disable-next-line no-unused-vars
